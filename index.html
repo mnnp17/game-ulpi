@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Cinta</title>
+     <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kuis Cinta</h1>
+            <p>Teruntuk Ulpi Yang Suka Ngambek</p>
+        </div>
+
+        <div id="main-menu" class="menu">
+            <button class="menu-btn" id="start-btn">Mulai Kuis</button>
+            <button class="menu-btn" id="about-btn">Tentang</button>
+            <button class="menu-btn" id="topics-btn">Topik Lain</button>
+        </div>
+
+        <div id="about-section" class="quiz-container" style="display: none;">
+            <h2>Tentang Kuis Cinta</h2>
+            <p>Kuis Cinta adalah permainan sederhana yang dibuat khusus untuk Ulpi.</p>
+            <p>Jawab pertanyaan dengan benar dan dapatkan nilai tertinggi!</p>
+            <button class="menu-btn" id="back-btn" style="margin-top: 20px;">Kembali</button>
+        </div>
+
+        <div id="topics-section" class="quiz-container" style="display: none;">
+            <h2>Topik Lain</h2>
+            <p>Berikut adalah beberapa topik yang tersedia:</p>
+            <div class="options">
+                <button class="option-btn">Cara Mengatasi Ngambek</button>
+                <button class="option-btn">Bahasa Cinta</button>
+                <button class="option-btn">Komunikasi Pasangan</button>
+                <button class="option-btn">Memahami Perasaan</button>
+            </div>
+            <button class="menu-btn" id="back-btn-2" style="margin-top: 20px;">Kembali</button>
+        </div>
+
+        <div id="level-menu" class="quiz-container" style="display: none;">
+            <h2>Pilih Level Kuis</h2>
+            <div class="level-info">
+                <p>Pilih level kesulitan untuk memulai kuis:</p>
+                <p>Setiap level memiliki 5 pertanyaan. Selesaikan level untuk membuka level berikutnya.</p>
+            </div>
+            <div class="level-container">
+                <div>
+                    <button class="level-btn easy" id="easy-btn">1</button>
+                    <div class="level-label">Mudah</div>
+                </div>
+                <div>
+                    <button class="level-btn medium locked" id="medium-btn">2</button>
+                    <div class="level-label">Sedang</div>
+                </div>
+                <div>
+                    <button class="level-btn hard locked" id="hard-btn">3</button>
+                    <div class="level-label">Sulit</div>
+                </div>
+            </div>
+            <button class="menu-btn" id="back-level-btn" style="margin-top: 20px;">Kembali</button>
+        </div>
+
+        <div id="quiz-section" class="quiz-container" style="display: none;">
+            <div class="question" id="question">Pertanyaan akan muncul di sini</div>
+            <div class="options" id="options">
+                <!-- Opsi jawaban akan diisi oleh JavaScript -->
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="next-btn">Lanjut</button>
+        </div>
+
+        <div id="score-section" class="score-container" style="display: none;">
+            <h2>Hasil Kuis Anda</h2>
+            <div class="score" id="final-score">0/0</div>
+            <p id="score-message"></p>
+            <div class="score-buttons">
+                <button class="restart-btn" id="restart-btn">Main Lagi</button>
+                <button class="menu-btn" id="back-to-menu-btn">Kembali ke Menu</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            © Ulpi Tukang Ngambek
+        </div>
+    </div>
+
+    <script>
+        // Efek love saat diklik
+        document.addEventListener('click', function(e) {
+            const love = document.createElement('div');
+            love.classList.add('love');
+            love.innerHTML = '❤';
+            
+            const x = e.clientX + (Math.random() * 20 - 10);
+            const y = e.clientY + (Math.random() * 20 - 10);
+            
+            love.style.left = x + 'px';
+            love.style.top = y + 'px';
+            
+            const tx = (Math.random() * 100 - 50);
+            love.style.setProperty('--tx', tx + 'px');
+            
+            document.body.appendChild(love);
+            
+            setTimeout(() => {
+                love.remove();
+            }, 1000);
+        });
+
+        // Data kuis per level
+        const quizData = {
+            easy: [
+                {
+                    question: "Apa yang biasanya membuat Ulpi tersenyum?",
+                    options: ["Diam-diam", "Dibelikan makanan", "Ditinggal sendiri", "Dibuat kesal"],
+                    answer: "Dibelikan makanan",
+                    explanation: "Benar! Ulpi paling suka kalau dibelikan makanan karena ulpi gagal diet."
+                },
+                {
+                    question: "Apa warna favorit Ulpi?",
+                    options: ["Merah", "Biru", "Pink", "Hitam"],
+                    answer: "Pink",
+                    explanation: "Tepat sekali! Ulpi sangat suka warna pink yang manis seperti dirinya."
+                },
+                {
+                    question: "Apa yang Ulpi lakukan saat ngambek?",
+                    options: ["Tersenyum", "Banyak bicara", "Diam", "Bernyanyi"],
+                    answer: "Diam",
+                    explanation: "Betul! Ulpi biasanya diam saat sedang ngambek."
+                },
+                {
+                    question: "Apa makanan favorit Ulpi?",
+                    options: ["Sayuran", "Buah-buahan", "Mie ayam", "batu"],
+                    answer: "Buah-buahan",
+                    explanation: "Hebat! Ulpi paling suka buah-buahan karena ulpi adalah herbivora."
+                },
+                {
+                    question: "Apa yang paling efektif untuk menghibur Ulpi?",
+                    options: ["Nasehat panjang", "Pelukan", "Diam saja", "Tertawa"],
+                    answer: "Pelukan",
+                    explanation: "Benar! Pelukan hangat adalah cara terbaik untuk menghibur Ulpi."
+                }
+            ],
+            medium: [
+                {
+                    question: "Berapa lama biasanya Ulpi bisa ngambek?",
+                    options: ["5 menit", "1 jam", "3 jam", "Seharian"],
+                    answer: "Seharian",
+                    explanation: "Tepat! Rata-rata Ulpi ngambek selama 3 jam sebelum akhirnya luluh."
+                },
+                {
+                    question: "Apa yang Ulpi katakan saat benar-benar marah?",
+                    options: ["Mboh", "Nyapo", "Aku mau sendiri dulu", "Semua Benar"],
+                    answer: "Semua Benar",
+                    explanation: "Benar! Ulpi memang melakukan segala hal ketika ngambek."
+                },
+                {
+                    question: "Apa hadiah terbaik untuk Ulpi?",
+                    options: ["Bunga", "Coklat", "Waktu berkualitas", "Barang mahal"],
+                    answer: "Waktu berkualitas",
+                    explanation: "Tepat! Ulpi lebih menghargai waktu bersama daripada hadiah material."
+                },
+                {
+                    question: "Apa yang Ulpi lakukan saat merasa bersalah?",
+                    options: ["Meminta maaf langsung", "Memberi hadiah", "Berusaha lebih baik", "Tetap ngambek"],
+                    answer: "Tetap ngambek",
+                    explanation: "Benar! Ulpi biasanya tetap ngambek sampai cowoknya yang minta maaf."
+                },
+                {
+                    question: "Apa film favorit Ulpi?",
+                    options: ["Horror", "Romantis", "Komedi", "Action"],
+                    answer: "Horror",
+                    explanation: "Tepat! Ulpi suka film horror biar dia bisa belajar menakut-nakuti cowoknya."
+                }
+            ],
+            hard: [
+                {
+                    question: "Apa yang Ulpi inginkan dalam hubungan?",
+                    options: ["Kebebasan", "Perhatian penuh", "Kesetaraan", "Keduanya merasa nyaman"],
+                    answer: "Keduanya merasa nyaman",
+                    explanation: "Benar! Yang terpenting bagi Ulpi adalah kenyamanan bersama."
+                },
+                {
+                    question: "Apa yang paling ditakuti Ulpi dalam hubungan?",
+                    options: ["Dikhianati", "Dibohongi", "Diabaikan", "Semua benar"],
+                    answer: "Semua benar",
+                    explanation: "Tepat! Ulpi takut semua hal tersebut terjadi dalam hubungan."
+                },
+                {
+                    question: "Bagaimana cara terbaik berkomunikasi dengan Ulpi saat dia ngambek?",
+                    options: ["Menunggu dia tenang", "Memaksa bicara saat itu juga", "Mengirim pesan panjang", "Pura-pura tidak tahu"],
+                    answer: "Menunggu dia tenang",
+                    explanation: "Benar! Beri Ulpi waktu sampai dia siap bicara."
+                },
+                {
+                    question: "Apa yang membuat Ulpi merasa paling dicintai?",
+                    options: ["Kata-kata manis", "Tindakan nyata", "Hadiah", "Waktu bersama"],
+                    answer: "Tindakan nyata",
+                    explanation: "Tepat! Ulpi lebih percaya pada tindakan daripada kata-kata."
+                },
+                {
+                    question: "Apa impian terbesar Ulpi dalam hubungan?",
+                    options: ["Kaya raya", "Bahagia sederhana", "Terkenal", "Membesarkan keluarga"],
+                    answer: "Bahagia sederhana",
+                    explanation: "Benar! Kebahagiaan sederhana adalah impian Ulpi."
+                }
+            ]
+        };
+
+        // Variabel kuis
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        let currentLevel = null;
+        let unlockedLevels = { easy: true, medium: false, hard: false };
+
+        // Elemen DOM
+        const mainMenu = document.getElementById('main-menu');
+        const aboutSection = document.getElementById('about-section');
+        const topicsSection = document.getElementById('topics-section');
+        const levelMenu = document.getElementById('level-menu');
+        const quizSection = document.getElementById('quiz-section');
+        const scoreSection = document.getElementById('score-section');
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-btn');
+        const finalScoreElement = document.getElementById('final-score');
+        const scoreMessageElement = document.getElementById('score-message');
+
+        // Tombol menu
+        document.getElementById('start-btn').addEventListener('click', showLevelMenu);
+        document.getElementById('about-btn').addEventListener('click', showAbout);
+        document.getElementById('topics-btn').addEventListener('click', showTopics);
+        document.getElementById('back-btn').addEventListener('click', backToMenu);
+        document.getElementById('back-btn-2').addEventListener('click', backToMenu);
+        document.getElementById('back-level-btn').addEventListener('click', backToMenu);
+        document.getElementById('restart-btn').addEventListener('click', restartQuiz);
+        document.getElementById('back-to-menu-btn').addEventListener('click', backToMenu);
+
+        // Tombol level
+        document.getElementById('easy-btn').addEventListener('click', () => startQuiz('easy'));
+        document.getElementById('medium-btn').addEventListener('click', function() {
+            if (unlockedLevels.medium) startQuiz('medium');
+        });
+        document.getElementById('hard-btn').addEventListener('click', function() {
+            if (unlockedLevels.hard) startQuiz('hard');
+        });
+
+        // Fungsi untuk menampilkan menu level
+        function showLevelMenu() {
+            mainMenu.style.display = 'none';
+            levelMenu.style.display = 'block';
+            updateLevelButtons();
+        }
+
+        // Fungsi untuk memperbarui tampilan tombol level
+        function updateLevelButtons() {
+            const mediumBtn = document.getElementById('medium-btn');
+            const hardBtn = document.getElementById('hard-btn');
+            
+            if (unlockedLevels.medium) {
+                mediumBtn.classList.remove('locked');
+            } else {
+                mediumBtn.classList.add('locked');
+            }
+            
+            if (unlockedLevels.hard) {
+                hardBtn.classList.remove('locked');
+            } else {
+                hardBtn.classList.add('locked');
+            }
+        }
+
+        // Fungsi untuk memulai kuis dengan level tertentu
+        function startQuiz(level) {
+            currentLevel = level;
+            mainMenu.style.display = 'none';
+            levelMenu.style.display = 'none';
+            quizSection.style.display = 'block';
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Fungsi untuk menampilkan tentang
+        function showAbout() {
+            mainMenu.style.display = 'none';
+            aboutSection.style.display = 'block';
+        }
+
+        // Fungsi untuk menampilkan topik
+        function showTopics() {
+            mainMenu.style.display = 'none';
+            topicsSection.style.display = 'block';
+        }
+
+        // Fungsi kembali ke menu
+        function backToMenu() {
+            aboutSection.style.display = 'none';
+            topicsSection.style.display = 'none';
+            quizSection.style.display = 'none';
+            scoreSection.style.display = 'none';
+            levelMenu.style.display = 'none';
+            mainMenu.style.display = 'flex';
+        }
+
+        // Fungsi memuat pertanyaan
+        function loadQuestion() {
+            const quiz = quizData[currentLevel][currentQuestion];
+            questionElement.textContent = quiz.question;
+            
+            optionsContainer.innerHTML = '';
+            
+            quiz.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectOption(option));
+                optionsContainer.appendChild(button);
+            });
+            
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            nextButton.style.display = 'none';
+            selectedOption = null;
+        }
+
+        // Fungsi memilih opsi
+        function selectOption(option) {
+            if (selectedOption !== null) return;
+            
+            selectedOption = option;
+            const quiz = quizData[currentLevel][currentQuestion];
+            const optionButtons = document.querySelectorAll('.option-btn');
+            
+            optionButtons.forEach(button => {
+                if (button.textContent === quiz.answer) {
+                    button.classList.add('correct');
+                } else if (button.textContent === option && option !== quiz.answer) {
+                    button.classList.add('wrong');
+                }
+                button.disabled = true;
+            });
+            
+            if (option === quiz.answer) {
+                score++;
+                feedbackElement.textContent = "Benar! " + quiz.explanation;
+                feedbackElement.classList.add('correct-feedback');
+            } else {
+                feedbackElement.textContent = "Salah! Jawaban yang benar adalah " + quiz.answer + ". " + quiz.explanation;
+                feedbackElement.classList.add('wrong-feedback');
+            }
+            
+            nextButton.style.display = 'block';
+        }
+
+        // Event listener untuk tombol next
+        nextButton.addEventListener('click', () => {
+            currentQuestion++;
+            if (currentQuestion < quizData[currentLevel].length) {
+                loadQuestion();
+            } else {
+                showScore();
+            }
+        });
+
+        // Fungsi menampilkan skor
+        function showScore() {
+            quizSection.style.display = 'none';
+            scoreSection.style.display = 'block';
+            finalScoreElement.textContent = `${score}/${quizData[currentLevel].length}`;
+            
+            const percentage = (score / quizData[currentLevel].length) * 100;
+            
+            // Unlock level berikutnya jika skor cukup
+            if (percentage >= 80) {
+                if (currentLevel === 'easy' && !unlockedLevels.medium) {
+                    unlockedLevels.medium = true;
+                    scoreMessageElement.textContent = "Selamat! Anda telah membuka level Sedang!";
+                } else if (currentLevel === 'medium' && !unlockedLevels.hard) {
+                    unlockedLevels.hard = true;
+                    scoreMessageElement.textContent = "Hebat! Anda telah membuka level Sulit!";
+                } else {
+                    if (percentage >= 80) {
+                        scoreMessageElement.textContent = "Luar biasa! Ulpi memang wanita spesial! ❤";
+                    } else if (percentage >= 60) {
+                        scoreMessageElement.textContent = "apakah kamu mencoba berbohong?.";
+                    } else {
+                        scoreMessageElement.textContent = "Pasti anda berbohong yakannn...";
+                    }
+                }
+            } else {
+                scoreMessageElement.textContent = "Kamu perlu skor minimal 80% untuk membuka level berikutnya.";
+            }
+            
+            updateLevelButtons();
+        }
+
+        // Fungsi mengulang kuis
+        function restartQuiz() {
+            scoreSection.style.display = 'none';
+            showLevelMenu();
+        }
+    </script>
+</body>
+</html>
